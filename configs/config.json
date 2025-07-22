@@ -1,0 +1,6 @@
+{
+  "files": {
+    "ai": "./plans/ai",
+    "ai_product": "./plans/ai_product"
+  }
+}
