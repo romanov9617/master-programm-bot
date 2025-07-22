@@ -2,5 +2,8 @@
   "files": {
     "ai": "./plans/ai",
     "ai_product": "./plans/ai_product"
+  },
+  "bot": {
+    "token": "YOUR_TOKEN"
   }
 }
