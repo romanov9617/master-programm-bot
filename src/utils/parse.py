@@ -1,17 +1,27 @@
 import re
+from pathlib import Path
+from typing import Iterator, List, Tuple
 
 import pandas as pd
 import pdfplumber
 
-rows = []
+_regexp = r"^([\d,\s]+)\s+(.+?)\s+(\d+)\s+(\d+)$"
 
-with pdfplumber.open("10033-abit.pdf") as pdf:
-    for page in pdf.pages:
-        text = page.extract_text()
-        if text:
-            for line in text.split("\n"):
-                # Шаблон: один или несколько семестров через запятую, потом название, потом 2 числа (ЗЕТ, часы)
-                m = re.match(r"^([\d,\s]+)\s+(.+?)\s+(\d+)\s+(\d+)$", line)
+
+class CuriculumParser:
+    def __init__(self, table: Path) -> None:
+        self._table = table
+
+    def _extract_from_pdf(self, table: Path) -> Iterator[str]:
+        with pdfplumber.open(table) as pdf:
+            for page in pdf.pages:
+                yield page.extract_text()
+
+    def _handle_row(self, row: str) -> List[Tuple] | None:
+        rows = []
+        if row:
+            for line in row.split("\n"):
+                m = re.match(_regexp, line)
                 if m:
                     semesters_str, name, zet, hours = m.groups()
                     semesters = re.findall(r"\d+", semesters_str)
@@ -24,6 +34,14 @@ with pdfplumber.open("10033-abit.pdf") as pdf:
                                 "hours": int(hours),
                             }
                         )
+        return rows
 
-df = pd.DataFrame(rows)
-print(df)
+    def parse_pdf(self) -> pd.DataFrame:
+        total = []
+        for row in self._extract_from_pdf(self._table):
+            rows = self._handle_row(row)
+
+            if not rows:
+                continue
+            total.extend(rows)
+        return pd.DataFrame(total)
