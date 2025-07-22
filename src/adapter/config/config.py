@@ -3,36 +3,24 @@ import os
 
 from pydantic import BaseModel
 
-from src.adapter.config.exceptions import (
+from src.adapter.config.exceptions.config import (
     ConfigFileNotFoundException,
     EnvVarNotDefinedException,
 )
 
 
 class Config(BaseModel):
-    kafka: "KafkaConfig"
-    minio: "MinioConfig"
-    file: "FileDownloadConfig"
+    files: "FileConfig"
+    bot: "BotConfig"
 
 
-class KafkaConfig(BaseModel):
-    host: str
-    port: int
-    image_uploads_key: str = "inspector/uploads/"
-    image_uploads_topic: str
+class FileConfig(BaseModel):
+    ai: str
+    ai_product: str
 
 
-class MinioConfig(BaseModel):
-    host: str
-    port: int
-    access_key_id: str
-    secret_access_key: str
-    session_token: str | None = None
-    region_name: str = "us-east-1"
-
-
-class FileDownloadConfig(BaseModel):
-    download_dir: str
+class BotConfig(BaseModel):
+    token: str
 
 
 CONFIG_PATH = os.environ.get("CONFIG_PATH")
