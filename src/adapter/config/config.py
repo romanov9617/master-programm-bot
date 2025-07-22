@@ -12,6 +12,7 @@ from src.adapter.config.exceptions.config import (
 class Config(BaseModel):
     files: "FileConfig"
     bot: "BotConfig"
+    sites: "SitesConfig"
 
 
 class FileConfig(BaseModel):
@@ -21,6 +22,11 @@ class FileConfig(BaseModel):
 
 class BotConfig(BaseModel):
     token: str
+
+
+class SitesConfig(BaseModel):
+    ai: str
+    ai_product: str
 
 
 CONFIG_PATH = os.environ.get("CONFIG_PATH")
